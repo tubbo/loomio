@@ -15,6 +15,7 @@ class Group < ActiveRecord::Base
   serialize :sectors_metric, Array
 
   after_initialize :set_defaults
+  before_create :set_max_group_size
   after_create :add_creator_as_admin
 
   default_scope where(:archived_at => nil)
@@ -252,6 +253,10 @@ You'll be prompted to make a short statement about the reason for your decision.
   #
 
   private
+
+  def set_max_group_size
+    self.max_size = 50 if (parent_id.nil? && max_size.nil?)
+  end
 
   def set_defaults
     self.viewable_by ||= :members if parent.nil?
